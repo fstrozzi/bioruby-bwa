@@ -11,4 +11,5 @@ group :development do
   gem "jeweler", "~> 1.5.2"
   gem "rcov", ">= 0"
   gem "bio", ">= 1.4.1"
+  gem "ffi", ">= 1.0.5"
 end
