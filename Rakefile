@@ -26,12 +26,12 @@ Jeweler::Tasks.new do |gem|
 end
 Jeweler::RubygemsDotOrgTasks.new
 
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
+task :test do
+  Dir.glob("test/**/test_*.rb").each do |test|
+    ruby test
+  end
 end
+
 
 require 'rcov/rcovtask'
 Rcov::RcovTask.new do |test|
