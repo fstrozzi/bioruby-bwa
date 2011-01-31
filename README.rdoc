@@ -1,6 +1,6 @@
 = bio-bwa
 
-Description goes here.
+Ruby binding to BWA fast mapping software. Build using Ruby FFI library. THIS SOFTWARE IS STILL IN ALPHA PHASE.
 
 == Contributing to bio-bwa
  
