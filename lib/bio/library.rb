@@ -2,6 +2,10 @@ module Bio
   class BWA
     class Library
       
+      def self.arch_type
+        ['a'].pack('P').length  > 4 ? "64Bit" : "32Bit"
+      end
+      
       def self.filename
         
         # checking if system architecture is 32bit or 64bit
