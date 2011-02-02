@@ -32,7 +32,7 @@ module Bio
       
       def self.make_index(file_in, params = {:algorithm => "is",:prefix => nil,:colorspace => nil})
         valid_params = %w(bwtsw is) # 'div' option will be suppressed by BWA author, since require 'libdivsufsort'. Use 'is' instead.
-        raise ArgumentError, "'index' function can only accept 'bwtsw' or 'is' as valid algorithms" if !valid_params.include?(params[:algorithm])
+        raise ArgumentError, "'index' function can only accept 'bwtsw' or 'is' as valid algorithms" unless valid_params.include?(params[:algorithm])
         args = ["index"]
         args << "-a"
         args << params[:algorithm]
