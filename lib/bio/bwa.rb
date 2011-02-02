@@ -45,7 +45,7 @@ module Bio
         self.call_function(args)
       end
       
-      def self.aln(index_prefix, file_in, params={}) #params={:n => 0.04,:o => 1,:e => -1,:i => 5, :d => 10,:l => 32,:k => 2,:m => 2000000,:t => 1,:M => 3,:O => 11,:E => 4,:R => 30,:q => 0,:f => nil,:B => nil,:c => false,:L=>false,:N=>false,:I=>false,:b=>false,:single => false,:first => false,:second => false}
+      def self.aln(index_prefix, file_in, params={})
           args = ["aln"]
           valid_params = %w(n o e i d l k c L R m t N M O E q f b single first second I B)
           raise ArgumentError, "A File name is required to write SAI output!" unless params.include?(:f)
@@ -70,7 +70,7 @@ module Bio
       end
       
       
-      def self.samse(index_prefix, sai_in, fasta_in, params = {}) # params = {:n => 3, :r => nil, :f => "out.sam"}
+      def self.samse(index_prefix, sai_in, fasta_in, params = {})
         args = ["sai2sam_se"]
         valid_params = %w(n r f)
         raise ArgumentError, "A File name is required to write SAM output!" unless params.include?(:f)
