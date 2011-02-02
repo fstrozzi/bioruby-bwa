@@ -2,11 +2,13 @@ module Bio
   class BWA
     class Library
       
-      def self.arch_type
-        ['a'].pack('P').length  > 4 ? "64Bit" : "32Bit"
-      end
-      
       def self.filename
+        
+        # checking if system architecture is 32bit or 64bit
+        if Bio::BWA::Library.arch_type == "32Bit" then
+          raise SystemError, "Unable to run. BWA library is compiled for 64Bit systems!"
+        end
+        
         lib_extension = case RUBY_PLATFORM
           when /linux/ then 'so'
           when /darwin/ then 'dylib'
