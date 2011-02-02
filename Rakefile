@@ -14,9 +14,9 @@ Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "bio-bwa"
   gem.homepage = "http://github.com/fstrozzi/bioruby-bwa"
-  gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.license = "MIT/GPLv3"
+  gem.summary = %Q{Ruby binding for BWA mapping software}
+  gem.description = %Q{Ruby binding for BWA mapping software, built using Ruby-FFI library}
   gem.email = "francesco.strozzi@gmail.com"
   gem.authors = ["Francesco Strozzi"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
