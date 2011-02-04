@@ -10,7 +10,7 @@ class TestBioBwa < Test::Unit::TestCase
   
   def test_samse
     assert_nothing_raised do 
-      Bio::BWA.samse("#{@testdata}","#{@testdata}.sai","#{@testdata}.fa",:f => "#{@testdata}.sam")
+      Bio::BWA.samse(:prefix=>"#{@testdata}",:sai_in=>"#{@testdata}.sai",:fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sam")
     end
     md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.sam","rb") {|f| f.read})
     assert_equal("5c523ae7bf18656190fa0bcd8944bd14",md5)
@@ -19,11 +19,21 @@ class TestBioBwa < Test::Unit::TestCase
   
   def test_sampe
     assert_nothing_raised do 
-      Bio::BWA.sampe("#{@testdata}","#{@testdata}.sai","#{@testdata}.sai","#{@testdata}.fa","#{@testdata}.fa",:f => "#{@testdata}.sampe")
+      Bio::BWA.sampe(:prefix=>"#{@testdata}",:first_sai_in=>"#{@testdata}.sai",:second_sai_in=>"#{@testdata}.sai",:first_fasta_in=>"#{@testdata}.fa",:second_fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sampe")
     end
     md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.sampe","rb") {|f| f.read})
     assert_equal("8c3847bade0a19e5de77c274355fe154",md5)
-    FileUtils.rm("#{@testdata}.sampe") 
+    FileUtils.rm("#{@testdata}.sampe")
+  end
+  
+  def test_zomg_cleanup
+    assert_nothing_raised do
+      list = Dir.glob("#{@testdata}.*")
+      list.delete("#{@testdata}.fa")
+      list.delete("#{@testdata}.long.fa")
+      list.delete("#{@testdata}.short.fa")
+      list.each {|l| FileUtils.rm(l)}
+    end
   end
   
 end
