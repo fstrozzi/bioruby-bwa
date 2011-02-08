@@ -4,12 +4,8 @@ module Bio
       
       require 'rbconfig'      
       
-      def self.filename
-        # checking if system architecture is 32bit or 64bit
-        if Config::CONFIG['target_cpu'] != "x86_64" then
-          raise RuntimeError, "Unable to load the shared library. BWA is compiled for 64Bit systems!"
-        end
-        
+      def self.load
+        raise RuntimeError,"Unable to load shared library! BWA is compiled for 64bit systems" if arch_type == "32bit"
         lib_extension = case Config::CONFIG['host_os']
           when /linux/ then 'so'
           when /darwin/ then 'dylib'
@@ -17,6 +13,17 @@ module Bio
         end
         File.join(File.expand_path(File.dirname(__FILE__)),'ext',"libbwa.#{lib_extension}")
       end
+      
+      private
+      
+      def self.arch_type
+        if RUBY_PLATFORM == 'java'
+          return (Config::CONFIG['target_cpu'] == "x86_64") ? "64bit" : "32bit" 
+        else
+          return (['a'].pack('p').size > 4) ? "64bit" : "32bit" 
+        end
+      end
+      
     end
   end
 end
