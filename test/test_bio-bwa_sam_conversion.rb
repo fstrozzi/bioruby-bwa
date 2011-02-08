@@ -8,18 +8,18 @@ class TestBioBwa < Test::Unit::TestCase
     @testdata = File.join("test","data","testdata")
   end
   
-  def test_samse
+  def test_sai_to_sam_single
     assert_nothing_raised do 
-      Bio::BWA.samse(:prefix=>"#{@testdata}",:sai_in=>"#{@testdata}.sai",:fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sam")
+      Bio::BWA.sai_to_sam_single(:prefix=>"#{@testdata}",:sai_in=>"#{@testdata}.sai",:fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sam")
     end
     md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.sam","rb") {|f| f.read})
     assert_equal("5c523ae7bf18656190fa0bcd8944bd14",md5)
     FileUtils.rm("#{@testdata}.sam") 
   end
   
-  def test_sampe
+  def test_sai_to_sam_paired
     assert_nothing_raised do 
-      Bio::BWA.sampe(:prefix=>"#{@testdata}",:first_sai_in=>"#{@testdata}.sai",:second_sai_in=>"#{@testdata}.sai",:first_fasta_in=>"#{@testdata}.fa",:second_fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sampe")
+      Bio::BWA.sai_to_sam_paired(:prefix=>"#{@testdata}",:first_sai_in=>"#{@testdata}.sai",:second_sai_in=>"#{@testdata}.sai",:first_fasta_in=>"#{@testdata}.fa",:second_fasta_in=>"#{@testdata}.fa",:file_out => "#{@testdata}.sampe")
     end
     md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.sampe","rb") {|f| f.read})
     assert_equal("8c3847bade0a19e5de77c274355fe154",md5)

@@ -51,7 +51,7 @@ module Bio
         call_BWA_function(args)
       end
       
-      def self.aln(params={})
+      def self.short_read_alignment(params={})
           args = ["aln"]
           valid_params = %w(n o e i d l k c L R m t N M O E q f b single first second I B prefix file_in)
           mandatory_params = [:prefix,:file_in,:f]
@@ -69,7 +69,7 @@ module Bio
       end
       
       
-      def self.samse(params = {})
+      def self.sai_to_sam_single(params = {})
         valid_params = %w(n r fasta_in sai_in prefix f)
         new_params = {}
         mandatory_params = [:prefix,:sai_in,:fasta_in,:f]
@@ -82,7 +82,7 @@ module Bio
         call_BWA_function(args)
       end
       
-      def self.sampe(params = {})
+      def self.sai_to_sam_paired(params = {})
         valid_params = %w(a o s P n N c f A r prefix first_sai_in second_sai_in first_fasta_in second_fasta_in)
         mandatory_params = [:prefix, :first_sai_in, :second_sai_in, :first_fasta_in, :second_fasta_in, :f]
         last_params = [:prefix, :first_sai_in, :second_sai_in, :first_fasta_in, :second_fasta_in]
@@ -95,7 +95,7 @@ module Bio
         call_BWA_function(args)
       end
       
-      def self.bwasw(params = {})
+      def self.long_read_alignment(params = {})
         valid_params = %w(q r a b t T w d z m y s c N H f prefix file_in)
         mandatory_params = [:prefix, :file_in, :f]
         last_params = [:prefix,:file_in]
@@ -108,7 +108,7 @@ module Bio
         call_BWA_function(args)
       end
       
-      def self.stdsw(params = {})
+      def self.simple_SW(params = {})
         args = ["stdsw"]
         valid_params = %w(g T f r p file_out long_seq short_seq)
         mandatory_params = [:long_seq,:short_seq]
