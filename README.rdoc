@@ -1,6 +1,6 @@
 = bio-bwa
 
-Ruby binding to BWA fast mapping software. Built using Ruby FFI library. THIS SOFTWARE IS STILL IN ALPHA PHASE.
+Ruby binding to BWA fast mapping software. Built using Ruby FFI library.
 
 == Contributing to bio-bwa
  
@@ -16,4 +16,18 @@ Ruby binding to BWA fast mapping software. Built using Ruby FFI library. THIS SO
 
 Copyright (c) 2011 Francesco Strozzi. See LICENSE.txt for
 further details.
+
+== Citations
+
+If you use this package please cite the following references:
+
+For short read alignment:
+
+Li H. and Durbin R. (2009) Fast and accurate short read alignment with Burrows-Wheeler Transform. Bioinformatics, 25:1754-60. [PMID: 19451168]
+
+For long read alignment:
+
+Li H. and Durbin R. (2010) Fast and accurate long-read alignment with Burrows-Wheeler Transform. Bioinformatics, Epub. [PMID: 20080505]
+
+
 
