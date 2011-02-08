@@ -1,61 +1,68 @@
 module Bio
   class BWA
       extend FFI::Library
-      ffi_lib Bio::BWA::Library.filename
+      ffi_lib Bio::BWA::Library.load
       
       def self.fa2pac(params={})
         valid_params = %q(file_in prefix)
         fixed_params = [:file_in,:prefix]
-        args = build_parameters("fa2pac",valid_params,fixed_params,params,fixed_params)
+        check_mandatory(fixed_params, params)
+        args = build_parameters("fa2pac",valid_params,params,fixed_params)
         call_BWA_function(args)
       end
       
       def self.pac2bwt(params={})
         valid_params = %q(file_in file_out)
         fixed_params = [:file_in,:file_out]
-        args = build_parameters("pac2bwt",valid_params,fixed_params,params,fixed_params)
+        check_mandatory(fixed_params, params)
+        args = build_parameters("pac2bwt",valid_params,params,fixed_params)
         call_BWA_function(args)
       end
       
       def self.bwtupdate(params={})
         valid_params = %w(file_in file_out)
         fixed_params = [:file_in]
-        args = build_parameters("bwtupdate",valid_params,fixed_params,params,fixed_params)
+        check_mandatory(fixed_params, params)
+        args = build_parameters("bwtupdate",valid_params,params,fixed_params)
         call_BWA_function(args)
       end
       
       def self.pac_rev(params={})
         valid_params = %w(file_in file_out)
         fixed_params = [:file_in,:file_out]
-        args = build_parameters("pac_rev",valid_params,fixed_params,params,fixed_params)
+        check_mandatory(fixed_params, params)
+        args = build_parameters("pac_rev",valid_params,params,fixed_params)
         call_BWA_function(args)
       end
       
       def self.bwt2sa(params={})
         valid_params = %q(file_in file_out i)
         fixed_params = [:file_in,:file_out]
-        args = build_parameters("bwt2sa",valid_params,fixed_params,params,fixed_params)
+        check_mandatory(fixed_params, params)
+        args = build_parameters("bwt2sa",valid_params,params,fixed_params)
         call_BWA_function(args)
       end
       
       def self.make_index(params = {})
         valid_params = %w(file_in p a c) # 'div' option will be suppressed by BWA author, since require 'libdivsufsort'. Use 'is' instead.
-        mandatory_params = [:p,:file_in]
+        mandatory_params = [:file_in]
         last_params = [:file_in]
+        check_mandatory(mandatory_params, params)
         new_params = {}
-        params.each_pair do |k,v|
+        params.each_pair do |k,v|      
           k = :p if k == :prefix
           new_params[k] = v
         end
-        args = build_parameters("index",valid_params,mandatory_params,new_params,last_params)        
+        args = build_parameters("index",valid_params,new_params,last_params)        
         call_BWA_function(args)
       end
       
       def self.short_read_alignment(params={})
           args = ["aln"]
           valid_params = %w(n o e i d l k c L R m t N M O E q f b single first second I B prefix file_in)
-          mandatory_params = [:prefix,:file_in,:f]
+          mandatory_params = [:prefix,:file_in,:file_out]
           last_params = [:prefix,:file_in]
+          check_mandatory(mandatory_params, params)
           new_params = {}
           params.each_pair do |k,v|
             k = "0" if k == :single
@@ -64,47 +71,62 @@ module Bio
             k = :f if k == :file_out
             new_params[k] = v
           end
-          args = build_parameters("aln",valid_params,mandatory_params,new_params,last_params)
+          args = build_parameters("aln",valid_params,new_params,last_params)
           call_BWA_function(args)
       end
       
       
       def self.sai_to_sam_single(params = {})
-        valid_params = %w(n r fasta_in sai_in prefix f)
+        valid_params = %w(n r fastq sai prefix f)
+        mandatory_params = [:prefix,:sai,:fastq]
+        last_params = [:prefix,:sai,:fastq]
+        check_mandatory(mandatory_params, params)
         new_params = {}
-        mandatory_params = [:prefix,:sai_in,:fasta_in,:f]
-        last_params = [:prefix,:sai_in,:fasta_in]
-        params.each_pair do |k,v|
+        params.each_pair do |k,v|   
           k = :f if k == :file_out
           new_params[k] = v
         end
-        args = build_parameters("sai2sam_se",valid_params,mandatory_params,new_params,last_params)
+        args = build_parameters("sai2sam_se",valid_params,new_params,last_params)
         call_BWA_function(args)
       end
       
       def self.sai_to_sam_paired(params = {})
-        valid_params = %w(a o s P n N c f A r prefix first_sai_in second_sai_in first_fasta_in second_fasta_in)
-        mandatory_params = [:prefix, :first_sai_in, :second_sai_in, :first_fasta_in, :second_fasta_in, :f]
-        last_params = [:prefix, :first_sai_in, :second_sai_in, :first_fasta_in, :second_fasta_in]
+        valid_params = %w(a o s P n N c f A r prefix first_sai second_sai first_fastq second_fastq)
+        mandatory_params = [:prefix, :sai, :fastq]
+        last_params = [:prefix, :first_sai, :second_sai, :first_fastq, :second_fastq]
+        check_mandatory(mandatory_params, params)
         new_params = {}
-        params.each_pair do |k,v|
-          k = :f if k == :file_out
-          new_params[k] = v
+        params.each_pair do |k,v| 
+          if k == :file_out
+            k = :f
+            new_params[k] = v
+          elsif k == :sai
+            raise ArgumentError,"you must provide an array with two SAI files!" if !v.is_a?(Array)
+            new_params[:first_sai] = v[0]
+            new_params[:second_sai] = v[1]
+          elsif k == :fastq
+            raise ArgumentError,"you must provide an array with two FastQ files!" if !v.is_a?(Array)
+            new_params[:first_fastq] = v[0]
+            new_params[:second_fastq] = v[1]
+          else
+            new_params[k] = v
+          end         
         end
-        args = build_parameters("sai2sam_pe",valid_params,mandatory_params,new_params,last_params)
+        args = build_parameters("sai2sam_pe",valid_params,new_params,last_params)
         call_BWA_function(args)
       end
       
       def self.long_read_alignment(params = {})
         valid_params = %w(q r a b t T w d z m y s c N H f prefix file_in)
-        mandatory_params = [:prefix, :file_in, :f]
+        mandatory_params = [:prefix, :file_in]
         last_params = [:prefix,:file_in]
+        check_mandatory(mandatory_params, params)
         new_params = {}
         params.each_pair do |k,v|
           k = :f if k == :file_out
           new_params[k] = v
         end
-        args = build_parameters("bwtsw2",valid_params,mandatory_params,new_params,last_params)
+        args = build_parameters("bwtsw2",valid_params,new_params,last_params)
         call_BWA_function(args)
       end
       
@@ -113,9 +135,11 @@ module Bio
         valid_params = %w(g T f r p file_out long_seq short_seq)
         mandatory_params = [:long_seq,:short_seq]
         last_params = mandatory_params
+        check_mandatory(mandatory_params, params)
         new_params = {}
         params.each_pair {|k,v| new_params[k] = v if k != :file_out}
-        args = build_parameters("stdsw",valid_params,mandatory_params,new_params,last_params)
+        
+        args = build_parameters("stdsw",valid_params,new_params,last_params)
         $stdout.reopen(params[:file_out],"w") if params[:file_out]
         call_BWA_function(args)
         $stdout.reopen("/dev/tty","w") if params[:file_out]
@@ -153,11 +177,10 @@ module Bio
         return exec_args
       end
       
-      def self.build_parameters(function_name,valid_params,mandatory_params,params,last_params)
+      def self.build_parameters(function_name,valid_params,params,last_params)
         args = [function_name]
-        mandatory_params.each {|mp| raise ArgumentError,"You must provide parameter '#{mp}'" unless params.include?(mp)}
         params.each_key do |k|
-          raise ArgumentError, "Unknown parameter '#{k}' !" unless valid_params.include?(k.to_s)
+          raise ArgumentError, "Unknown parameter '#{k}'" unless valid_params.include?(k.to_s)
           unless last_params.include?(k) then
             args << "-#{k}"
             args << params[k] unless params[k] == true
@@ -167,11 +190,14 @@ module Bio
         return args
       end
       
-      
+      def self.check_mandatory(mandatory_params, params)
+        mandatory_params.each {|mp| raise ArgumentError,"You must provide parameter '#{mp}'" unless params.include?(mp)}
+      end
       
       private_class_method :call_BWA_function
       private_class_method :build_args_for_BWA
       private_class_method :build_parameters
+      private_class_method :check_mandatory
       
   end
 end
