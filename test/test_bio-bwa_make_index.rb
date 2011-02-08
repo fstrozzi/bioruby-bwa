@@ -32,4 +32,11 @@ class TestBwaIndex < Test::Unit::TestCase
     assert_equal("4f7ee2b68fade083421d8fd93bf024ec",md5_bwt)
     assert_equal("31ab6686d10cf980b9fc910854a38a7a",md5_pac)
   end
+  
+  def test_errors
+    assert_raise ArgumentError do
+      Bio::BWA.make_index(:a => 'is',:prefix => "foo", :c => true)
+    end
+  end
+  
 end

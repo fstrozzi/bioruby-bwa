@@ -26,12 +26,24 @@ class TestBioBwa < Test::Unit::TestCase
   end
   
   def test_simple_SW
-    assert_nothing_raised do
-      Bio::BWA.simple_SW(:long_seq=>"#{@testdata}.long.fa",:short_seq=>"#{@testdata}.short.fa",:f => true,:file_out => "#{@testdata}.stdsw")
+    if RUBY_PLATFORM != 'java' then # the method redirect STDOUT to a file and this test does not pass in JRuby
+      assert_nothing_raised do
+        Bio::BWA.simple_SW(:long_seq=>"#{@testdata}.long.fa",:short_seq=>"#{@testdata}.short.fa",:f => true,:file_out => "#{@testdata}.stdsw")
+      end
+      md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.stdsw","rb") {|f| f.read})
+      assert_equal("cedb41d4ba3581111fbcefec6063dc86",md5)
+      FileUtils.rm("#{@testdata}.stdsw")
     end
-    md5 = Digest::MD5::hexdigest(File.open("#{@testdata}.stdsw","rb") {|f| f.read})
-    assert_equal("cedb41d4ba3581111fbcefec6063dc86",md5)
-    FileUtils.rm("#{@testdata}.stdsw")
+  end
+  
+  def test_errors
+    assert_raise ArgumentError do
+      Bio::BWA.long_read_alignment(:prefix=>"#{@testdata}",:file_out=>"#{@testdata}.fa")
+    end
+    
+    assert_raise ArgumentError do
+      Bio::BWA.long_read_alignment(:prefix=>"#{@testdata}",:file_in=>"#{@testdata}.fa", :file_out=>"#{@testdata}.bwasw", :unknown_parameter => "foo")
+    end
   end
   
 end
