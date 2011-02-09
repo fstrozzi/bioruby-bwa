@@ -77,12 +77,8 @@ module Bio
         mandatory_params = [:file_in]
         last_params = [:file_in]
         check_mandatory(mandatory_params, params)
-        new_params = {}
-        params.each_pair do |k,v|      
-          k = :p if k == :prefix
-          new_params[k] = v
-        end
-        args = build_parameters("index",valid_params,new_params,last_params)        
+        params = change_arg_name(params,:prefix,:p) if params[:prefix]
+        args = build_parameters("index",valid_params,params,last_params)        
         call_BWA_function(args)
       end
       
@@ -121,15 +117,11 @@ module Bio
           mandatory_params = [:prefix,:file_in,:file_out]
           last_params = [:prefix,:file_in]
           check_mandatory(mandatory_params, params)
-          new_params = {}
-          params.each_pair do |k,v|
-            k = "0" if k == :single
-            k = "1" if k == :first
-            k = "2" if k == :second
-            k = :f if k == :file_out
-            new_params[k] = v
-          end
-          args = build_parameters("aln",valid_params,new_params,last_params)
+          params = change_arg_name(params,:file_out,:f) if params[:file_out]
+          params = change_arg_name(params,:single,"0") if params[:single]
+          params = change_arg_name(params,:first,"1") if params[:first]   
+          params = change_arg_name(params,:second,"2") if params[:second]
+          args = build_parameters("aln",valid_params,params,last_params)
           call_BWA_function(args)
       end
       
@@ -146,12 +138,8 @@ module Bio
         mandatory_params = [:prefix,:sai,:fastq]
         last_params = [:prefix,:sai,:fastq]
         check_mandatory(mandatory_params, params)
-        new_params = {}
-        params.each_pair do |k,v|   
-          k = :f if k == :file_out
-          new_params[k] = v
-        end
-        args = build_parameters("sai2sam_se",valid_params,new_params,last_params)
+        params = change_arg_name(params,:file_out,:f) if params[:file_out]
+        args = build_parameters("sai2sam_se",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -176,24 +164,20 @@ module Bio
         mandatory_params = [:prefix, :sai, :fastq]
         last_params = [:prefix, :first_sai, :second_sai, :first_fastq, :second_fastq]
         check_mandatory(mandatory_params, params)
-        new_params = {}
-        params.each_pair do |k,v| 
-          if k == :file_out
-            k = :f
-            new_params[k] = v
-          elsif k == :sai
-            raise ArgumentError,"you must provide an array with two SAI files!" unless v.is_a?(Array) and v.size == 2
-            new_params[:first_sai] = v[0]
-            new_params[:second_sai] = v[1]
-          elsif k == :fastq
-            raise ArgumentError,"you must provide an array with two FastQ files!" unless v.is_a?(Array) and v.size == 2
-            new_params[:first_fastq] = v[0]
-            new_params[:second_fastq] = v[1]
-          else
-            new_params[k] = v
-          end         
+        params = change_arg_name(params,:file_out,:f) if params[:file_out]
+        if params[:sai]
+          raise ArgumentError,"you must provide an array with two SAI files!" unless params[:sai].is_a?(Array) and params[:sai].size == 2
+          params[:first_sai] = params[:sai][0]
+          params[:second_sai] = params[:sai][1]
+          params.delete(:sai)
         end
-        args = build_parameters("sai2sam_pe",valid_params,new_params,last_params)
+        if params[:fastq]
+          raise ArgumentError,"you must provide an array with two FastQ files!" unless params[:fastq].is_a?(Array) and params[:fastq].size == 2
+          params[:first_fastq] = params[:fastq][0]
+          params[:second_fastq] = params[:fastq][1]
+          params.delete(:fastq)
+        end
+        args = build_parameters("sai2sam_pe",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -221,12 +205,8 @@ module Bio
         mandatory_params = [:prefix, :file_in, :file_out]
         last_params = [:prefix,:file_in]
         check_mandatory(mandatory_params, params)
-        new_params = {}
-        params.each_pair do |k,v|
-          k = :f if k == :file_out
-          new_params[k] = v
-        end
-        args = build_parameters("bwtsw2",valid_params,new_params,last_params)
+        params = change_arg_name(params,:file_out,:f) if params[:file_out]  
+        args = build_parameters("bwtsw2",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -247,13 +227,12 @@ module Bio
         mandatory_params = [:long_seq,:short_seq]
         last_params = mandatory_params
         check_mandatory(mandatory_params, params)
-        new_params = {}
-        params.each_pair {|k,v| new_params[k] = v if k != :file_out}
-        
-        args = build_parameters("stdsw",valid_params,new_params,last_params)
-        $stdout.reopen(params[:file_out],"w") if params[:file_out]
+        file_out = params[:file_out]
+        params.delete(:file_out)
+        args = build_parameters("stdsw",valid_params,params,last_params)
+        $stdout.reopen(file_out,"w") if file_out
         call_BWA_function(args)
-        $stdout.reopen("/dev/tty","w") if params[:file_out]
+        $stdout.reopen("/dev/tty","w") if file_out
       end
       
       
@@ -311,6 +290,14 @@ module Bio
       # @note this method should not be called directly
       def self.check_mandatory(mandatory_params, params)
         mandatory_params.each {|mp| raise ArgumentError,"You must provide parameter '#{mp}'" unless params.include?(mp)}
+      end
+      
+      # Internal method used to change parameters name from Ruby to BWA functions
+      # @note this method should not be called directly
+      def self.change_arg_name(hash,key,new_key)
+        hash[new_key] = hash[key]
+        hash.delete(key)
+        return hash
       end
       
       private_class_method :call_BWA_function
