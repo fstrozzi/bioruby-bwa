@@ -13,7 +13,7 @@ module Bio
         last_params = [:file_in, :prefix]
         mandatory_params = [:file_in]
         check_mandatory(mandatory_params, params)
-        args = build_parameters("fa2pac",valid_params,params,fixed_params)
+        args = build_parameters("fa2pac",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -23,9 +23,9 @@ module Bio
       # @option params [String] :file_out the name of the BWT file (REQUIRED)
       def self.pac2bwt(params={})
         valid_params = %q(file_in file_out)
-        fixed_params = [:file_in,:file_out]
-        check_mandatory(fixed_params, params)
-        args = build_parameters("pac2bwt",valid_params,params,fixed_params)
+        last_params = [:file_in,:file_out]
+        check_mandatory(last_params, params)
+        args = build_parameters("pac2bwt",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -35,9 +35,9 @@ module Bio
       # @note this method overwrite existing BWT file
       def self.bwtupdate(params={})
         valid_params = %w(file_in)
-        fixed_params = [:file_in]
-        check_mandatory(fixed_params, params)
-        args = build_parameters("bwtupdate",valid_params,params,fixed_params)
+        last_params = [:file_in]
+        check_mandatory(last_params, params)
+        args = build_parameters("bwtupdate",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -47,9 +47,9 @@ module Bio
       # @option params [String] :file_out the name of the REV PAC (REQUIRED)
       def self.pac_rev(params={})
         valid_params = %w(file_in file_out)
-        fixed_params = [:file_in,:file_out]
-        check_mandatory(fixed_params, params)
-        args = build_parameters("pac_rev",valid_params,params,fixed_params)
+        last_params = [:file_in,:file_out]
+        check_mandatory(last_params, params)
+        args = build_parameters("pac_rev",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -59,9 +59,9 @@ module Bio
       # @option params [String] :file_out the name of the REV PAC (REQUIRED)
       def self.bwt2sa(params={})
         valid_params = %q(file_in file_out i)
-        fixed_params = [:file_in,:file_out]
-        check_mandatory(fixed_params, params)
-        args = build_parameters("bwt2sa",valid_params,params,fixed_params)
+        last_params = [:file_in,:file_out]
+        check_mandatory(last_params, params)
+        args = build_parameters("bwt2sa",valid_params,params,last_params)
         call_BWA_function(args)
       end
       
@@ -182,11 +182,11 @@ module Bio
             k = :f
             new_params[k] = v
           elsif k == :sai
-            raise ArgumentError,"you must provide an array with two SAI files!" if !v.is_a?(Array)
+            raise ArgumentError,"you must provide an array with two SAI files!" unless v.is_a?(Array) and v.size == 2
             new_params[:first_sai] = v[0]
             new_params[:second_sai] = v[1]
           elsif k == :fastq
-            raise ArgumentError,"you must provide an array with two FastQ files!" if !v.is_a?(Array)
+            raise ArgumentError,"you must provide an array with two FastQ files!" unless v.is_a?(Array) and v.size == 2
             new_params[:first_fastq] = v[0]
             new_params[:second_fastq] = v[1]
           else
@@ -276,18 +276,18 @@ module Bio
       # @note this method should not be called directly   
       def self.call_BWA_function(args)
         c_args = build_args_for_BWA(args)  
-        self.send("bwa_#{args[0]}".to_sym,args.size,c_args)
+        self.send("bwa_#{args[0]}".to_sym,args.size,c_args) # call the C function and pass the arguments size and parameters list (same as int argc, char *argv[])
       end 
       
       # Internal method to build argument list for BWA C functions
       # @note this method should not be called directly
       def self.build_args_for_BWA(args)
         cmd_args = args.map do |arg|
-          FFI::MemoryPointer.from_string(arg.to_s)
+          FFI::MemoryPointer.from_string(arg.to_s) # convert every parameters into a string and then into a memory pointer
         end
-        exec_args = FFI::MemoryPointer.new(:pointer, cmd_args.length)
+        exec_args = FFI::MemoryPointer.new(:pointer, cmd_args.length) # creating a pointer to an array of pointers
         cmd_args.each_with_index do |arg, i|
-          exec_args[i].put_pointer(0, arg)
+          exec_args[i].put_pointer(0, arg) # filling in the array of pointers
         end
         return exec_args
       end
@@ -298,12 +298,12 @@ module Bio
         args = [function_name]
         params.each_key do |k|
           raise ArgumentError, "Unknown parameter '#{k}'" unless valid_params.include?(k.to_s)
-          unless last_params.include?(k) then
+          unless last_params.include?(k) then # the last_params are required after the options for BWA functions
             args << "-#{k}"
-            args << params[k] unless params[k] == true
+            args << params[k] unless params[k] == true # skipping boolean values. just include the param name
           end
         end                
-        last_params.each {|p| args << params[p]}
+        last_params.each {|p| args << params[p]} # now adding the last_params so the parameter list is in the correct order
         return args
       end
       
