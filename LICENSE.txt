@@ -22,7 +22,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 IMPORTANT NOTE: 
-This package includes the BWA SHARED LIBRARY.
+This package includes the BWA source code and pre-compiled shared libraries.
 The full BWA package is distributed under GPLv3 as it uses source codes from BWT-SW which is covered by GPL. 
 Sorting, hash table, BWT and IS libraries are distributed under the MIT license. 
 Please check http://bio-bwa.sourceforge.net/ for further details.
