@@ -277,12 +277,12 @@ module Bio
         args = [function_name]
         params.each_key do |k|
           raise ArgumentError, "Unknown parameter '#{k}'" unless valid_params.include?(k.to_s)
-          unless last_params.include?(k) then # the last_params are required after the options for BWA functions
+          if params[k] and !last_params.include?(k) then # check if value exists and if is not a last_params (required at the end of BWA functions)
             args << "-#{k}"
             args << params[k] unless params[k] == true # skipping boolean values. just include the param name
           end
         end                
-        last_params.each {|p| args << params[p]} # now adding the last_params so the parameter list is in the correct order
+        last_params.each {|p| args << params[p]} # now adding the last_params so the parameter list is in the correct order for BWA functions
         return args
       end
       
