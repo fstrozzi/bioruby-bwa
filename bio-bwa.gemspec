@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{bio-bwa}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Francesco Strozzi"]
@@ -46,10 +46,8 @@ Gem::Specification.new do |s|
     "doc/top-level-namespace.html",
     "ext/COPYING",
     "ext/ChangeLog",
-    "ext/Makefile",
     "ext/NEWS",
     "ext/README",
-    "ext/Rakefile",
     "ext/bamlite.c",
     "ext/bamlite.h",
     "ext/bntseq.c",
@@ -66,7 +64,6 @@ Gem::Specification.new do |s|
     "ext/bwt_gen/QSufSort.h",
     "ext/bwt_gen/bwt_gen.c",
     "ext/bwt_gen/bwt_gen.h",
-    "ext/bwt_gen/libbwtgen.a",
     "ext/bwt_lite.c",
     "ext/bwt_lite.h",
     "ext/bwtaln.c",
@@ -89,7 +86,6 @@ Gem::Specification.new do |s|
     "ext/kstring.c",
     "ext/kstring.h",
     "ext/kvec.h",
-    "ext/libbwa.dylib",
     "ext/main.c",
     "ext/main.h",
     "ext/mkrf_conf.rb",
