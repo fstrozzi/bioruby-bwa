@@ -7,9 +7,12 @@ path = File.expand_path(File.dirname(__FILE__))
 ext = Bio::BWA::Library.lib_extension
 
 flags = ""
-case ext
-  when "so" then flags = "-shared -Wl,-soname,libbwa.so"
-  when "dylib" then flags = "-bundle -undefined dynamic_lookup -flat_namespace"
+compile = ""
+if ext == "so" then 
+  flags = "-shared -Wl,-soname,libbwa.so"
+  compile = " -fPIC"
+elsif ext == "dylib" then 
+  flags = "-bundle -undefined dynamic_lookup -flat_namespace"
 end
 
 
@@ -28,7 +31,7 @@ SRC = FileList.new(source)
 OBJ_SRC = SRC.ext('o')    
 
 rule '.o' => '.c' do |t|
-  sh "gcc -c -g -Wall -O2 -DHAVE_PTHREAD "+t.source+" -o "+t.name
+  sh "gcc#{compile} -c -g -Wall -O2 -DHAVE_PTHREAD "+t.source+" -o "+t.name
 end
     
 task :compile_gen => OBJ_GEN do
