@@ -4,18 +4,25 @@ module Bio
       
       require 'rbconfig'      
       
+      def self.lib_extension
+        case Config::CONFIG['host_os']
+          when /linux/ then return 'so'
+          when /darwin/ then return 'dylib'
+          when /mswin|mingw/ then raise NotImplementedError, "BWA library is not available for Windows platform"  
+        end
+      end
+      
       # Load the correct library for the OS system in use
       # @return [String] the absolute path for the filename of the shared library
       # @note this method is called automatically when the module is loaded
       def self.load
         raise RuntimeError,"Unable to load shared library! BWA is compiled for 64bit systems" if arch_type == "32bit"
-        lib_extension = case Config::CONFIG['host_os']
-          when /linux/ then 'so'
-          when /darwin/ then 'dylib'
-          when /mswin|mingw/ then raise NotImplementedError, "BWA library is not available for Windows platform"  
-        end
-        File.join(File.expand_path(File.dirname(__FILE__)),'ext',"libbwa.#{lib_extension}")
+        path = File.expand_path File.dirname(__FILE__)
+        path.gsub!(/lib\/bio\/bwa/,'ext')
+        File.join(path,"libbwa.#{self.lib_extension}")
       end
+      
+      
       
       private
       
