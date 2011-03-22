@@ -19,6 +19,9 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{Ruby binding for BWA mapping software, built using Ruby-FFI library}
   gem.email = "francesco.strozzi@gmail.com"
   gem.authors = ["Francesco Strozzi"]
+  gem.extensions = "ext/mkrf_conf.rb"
+  gem.files += Dir['lib/**/*'] + Dir['ext/**/*'] 
+
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
