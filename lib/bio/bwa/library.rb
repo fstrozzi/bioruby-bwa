@@ -16,7 +16,7 @@ module Bio
       # @return [String] the absolute path for the filename of the shared library
       # @note this method is called automatically when the module is loaded
       def self.load
-        raise RuntimeError,"Unable to load shared library! BWA is compiled for 64bit systems" if arch_type == "32bit"
+        warn "BWA library should be run on a 64bit system" if arch_type == "32bit"
         path = File.expand_path File.dirname(__FILE__)
         path.gsub!(/lib\/bio\/bwa/,'ext')
         File.join(path,"libbwa.#{self.lib_extension}")
