@@ -9,7 +9,7 @@ module Bio
       # @option params [String] :file_in the Fasta or FastQ file (REQUIRED)
       # @option params [String] :prefix the prefix name for the PAC file
       def self.fa2pac(params={})
-        valid_params = %q(file_in prefix)
+        valid_params = %w(file_in prefix)
         last_params = [:file_in, :prefix]
         mandatory_params = [:file_in]
         check_mandatory(mandatory_params, params)
@@ -22,7 +22,7 @@ module Bio
       # @option params [String] :file_in the PAC file (REQUIRED)
       # @option params [String] :file_out the name of the BWT file (REQUIRED)
       def self.pac2bwt(params={})
-        valid_params = %q(file_in file_out)
+        valid_params = %w(file_in file_out)
         last_params = [:file_in,:file_out]
         check_mandatory(last_params, params)
         args = build_parameters("pac2bwt",valid_params,params,last_params)
@@ -58,7 +58,7 @@ module Bio
       # @option params [String] :file_in the PAC file (REQUIRED)
       # @option params [String] :file_out the name of the REV PAC (REQUIRED)
       def self.bwt2sa(params={})
-        valid_params = %q(file_in file_out i)
+        valid_params = %w(file_in file_out i)
         last_params = [:file_in,:file_out]
         check_mandatory(last_params, params)
         args = build_parameters("bwt2sa",valid_params,params,last_params)
